@@ -1,0 +1,40 @@
+- name: Install docker packages
+  community.general.pacman:
+    update_cache: false
+    name:
+      - docker
+      - docker-compose
+    state: present
+
+- name: Configure docker.socket
+  ansible.builtin.systemd_service:
+    name: docker.socket
+    state: started
+    enabled: true
+
+- name: Create bloodhound directory
+  ansible.builtin.file:
+    path: /opt/bloodhound-ce
+    state: directory
+    mode: '0755'
+
+- name: Get bloodhound CE docker-compose
+  ansible.builtin.get_url: 
+    url: 'https://raw.githubusercontent.com/SpecterOps/BloodHound/refs/heads/main/examples/docker-compose/docker-compose.yml'
+    dest: /opt/bloodhound-ce/docker-compose.yml
+
+- name: Create bloodhoud-ce start script
+  ansible.builtin.copy:
+    src: bloodhound-compose-up.sh
+    dest: /usr/local/bin/bloodhound-compose-up.sh
+    owner: root
+    group: docker
+    mode: '0755'
+
+- name: Create bloodhoud-ce prune script
+  ansible.builtin.copy:
+    src: bloodhound-compose-prune.sh
+    dest: /usr/local/bin/bloodhound-compose-prune.sh
+    owner: root
+    group: docker
+    mode: '0755'

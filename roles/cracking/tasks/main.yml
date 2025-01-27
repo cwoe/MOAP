@@ -1,0 +1,15 @@
+- name: Install pacman packages
+  community.general.pacman:
+    update_cache: false
+    name:
+      - hashcat
+      - hashcat-utils
+      - john
+      - hydra
+    state: present
+
+- name: Clone SecLists
+  ansible.builtin.git:
+    repo: 'https://github.com/danielmiessler/SecLists'
+    dest: /opt/SecLists
+    force: yes

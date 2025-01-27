@@ -1,0 +1,11 @@
+---
+- name: Install pacman packages
+  community.general.pacman:
+    update_cache: false
+    name:
+      - qemu-guest-agent
+      - spice-vdagent
+      - htop
+      - bash-completion
+      - vim
+    state: present

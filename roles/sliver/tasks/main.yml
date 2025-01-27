@@ -1,0 +1,22 @@
+---
+- name: Install pacman packages
+  community.general.pacman:
+    update_cache: false
+    name:
+      - metasploit
+    state: present
+
+- name: Check that sliver exists
+  stat:
+    path: /usr/local/bin/sliver
+  register: sliver_exists
+
+- name: curl bash sliver
+  shell: curl https://sliver.sh/install|sudo bash
+  when: not sliver_exists.stat.exists
+
+- name: Start & enable sliver server
+  ansible.builtin.service:
+    name: sliver
+    state: started
+    enabled: true

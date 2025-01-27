@@ -1,0 +1,10 @@
+- name: Creates /usr/share/linux
+  ansible.builtin.file:
+    path: /usr/share/linux
+    state: directory
+
+- name: Download linpeas
+  ansible.builtin.get_url: 
+    url: 'https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas_fat.sh'
+    dest: /usr/share/linux/linpeas.sh
+    mode: '0744'

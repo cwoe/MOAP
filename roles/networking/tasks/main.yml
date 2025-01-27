@@ -1,0 +1,20 @@
+- name: Install pacman packages
+  community.general.pacman:
+    update_cache: false
+    name:
+      - openssh
+      - freerdp
+      - proxychains-ng
+      - openvpn
+      - nmap
+      - bind
+      - smbclient
+      - gnu-netcat
+      - noto-fonts-emoji #for penelope emojis
+    state: present
+
+- name: Install penelope shell handler
+  community.general.pipx:
+    name: penelope
+    global: true
+    source: git+https://github.com/brightio/penelope

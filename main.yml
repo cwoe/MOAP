@@ -1,0 +1,19 @@
+- name: Configure System
+  hosts: 127.0.0.1
+  roles:
+    - { role: roles/desktop, become: no}
+    - { role: roles/utility, become: yes}
+    - { role: roles/networking, become: yes}
+    - { role: roles/bloodhound-ce, become: yes}
+    - { role: roles/cracking, become: yes}
+    - { role: roles/burpsuite, become: yes}
+    - { role: roles/sliver, become: yes}
+    - { role: roles/active-directory, become: yes}
+    - { role: roles/web-apps, become: yes}
+    - { role: roles/win-priv-esc, become: yes}
+    - { role: roles/linux-priv-esc, become: yes}
+  gather_facts: true
+
+  handlers:
+
+  tasks:

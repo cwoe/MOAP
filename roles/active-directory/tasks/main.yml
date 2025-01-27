@@ -1,0 +1,91 @@
+- name: Install pacman packages
+  community.general.pacman:
+    update_cache: false
+    name:
+      - git
+      - freerdp
+      - python-pipx
+      - python-netifaces
+      - go
+      - ruby
+      - smbclient
+    state: present
+
+- name: Clone Responder
+  ansible.builtin.git:
+    repo: 'https://github.com/lgandx/Responder'
+    dest: /opt/Responder
+
+- name: Install python requirements for Responder
+  ansible.builtin.pip:
+    requirements: /opt/Responder/requirements.txt
+    virtualenv: /opt/venvs/Responder
+    virtualenv_command: python -m venv
+
+- name: Create wrapper file
+  ansible.builtin.copy:
+    content: 'source /opt/venvs/Responder/bin/activate; python /opt/Responder/Responder.py $@; deactivate;'
+    dest: /usr/local/bin/Responder.py
+    mode: '0755'
+
+- name: Check that kerbrute exists
+  stat:
+    path: /usr/local/bin/kerbrute
+  register: kerbrute_exists
+
+- name: go install kerbrute
+  shell: GOBIN=/usr/local/bin/ go install github.com/ropnop/kerbrute@latest
+  when: not kerbrute_exists.stat.exists
+
+- name: Install NetExec
+  community.general.pipx:
+    name: netexec
+    global: true
+    source: git+https://github.com/Pennyw0rth/NetExec
+
+- name: Install Bloodhound.py
+  community.general.pipx:
+    name: bloodhound-ce
+    global: true
+
+- name: Install Impacket
+  community.general.pipx:
+    name: impacket
+    global: true
+
+- name: Install certipy
+  community.general.pipx:
+    name: certipy-ad
+    global: true
+
+- name: Install evil-winrm
+  community.general.gem:
+    name: evil-winrm
+    bindir: /usr/local/bin/
+    state: latest
+
+- name: Creates /usr/share/windows
+  ansible.builtin.file:
+    path: /usr/share/windows
+    state: directory
+
+- name: Check if SharpHound.exe exists
+  stat:
+    path: /usr/share/windows/SharpHound.exe
+  register: sharphound_exists
+
+- name: Create /tmp/sharphound
+  ansible.builtin.file:
+    path: /tmp/sharphound
+    state: directory
+  when: not sharphound_exists.stat.exists
+
+- name: Unarchive a file that needs to be downloaded (added in 2.0)
+  ansible.builtin.unarchive:
+    src: https://github.com/SpecterOps/SharpHound/releases/download/v2.5.13/SharpHound-v2.5.13.zip
+    dest: /tmp/sharphound
+    remote_src: yes
+  notify: 
+    - move sharphound.exe
+    - move sharphound.ps1
+  when: not sharphound_exists.stat.exists

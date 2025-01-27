@@ -1,0 +1,18 @@
+- name: delete tmp folder
+  ansible.builtin.file:
+    path: /tmp/sharphound
+    state: absent
+
+- name: move sharphound.exe
+  ansible.builtin.copy:
+    src: /tmp/sharphound/SharpHound.exe
+    dest: /usr/share/windows/
+    mode: '0744'
+  notify: delete tmp folder
+
+- name: move sharphound.ps1
+  ansible.builtin.copy:
+    src: /tmp/sharphound/SharpHound.ps1
+    dest: /usr/share/windows/
+    mode: '0744'
+  notify: delete tmp folder

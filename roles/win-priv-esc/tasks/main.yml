@@ -1,0 +1,9 @@
+- name: Creates /usr/share/windows
+  ansible.builtin.file:
+    path: /usr/share/windows
+    state: directory
+
+- name: Clone Sharpcollection
+  ansible.builtin.git:
+    repo: 'https://github.com/Flangvik/SharpCollection'
+    dest: /usr/share/windows/SharpCollection

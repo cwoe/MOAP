@@ -1,0 +1,73 @@
+---
+- name: Install pacman packages
+  community.general.pacman:
+    update_cache: false
+    name:
+      - python
+      - git
+      - sqlmap
+      - go
+    state: present
+
+- name: Check that ffuf exists
+  stat:
+    path: /usr/local/bin/ffuf
+  register: ffuf_exists
+
+- name: go install ffuf
+  shell: GOBIN=/usr/local/bin/ go install github.com/ffuf/ffuf/v2@latest
+  when: not ffuf_exists.stat.exists
+
+- name: Clone SecLists
+  ansible.builtin.git:
+    repo: 'https://github.com/danielmiessler/SecLists'
+    dest: /opt/SecLists
+    force: yes
+
+- name: Clone XSStrike
+  ansible.builtin.git:
+    repo: 'https://github.com/s0md3v/XSStrike'
+    dest: /opt/XSStrike
+
+- name: Install python requirements for XSStrike
+  ansible.builtin.pip:
+    requirements: /opt/XSStrike/requirements.txt
+    virtualenv: /opt/venvs/XSStrike
+    virtualenv_command: python -m venv
+
+- name: Create wrapper file
+  ansible.builtin.copy:
+    content: 'source /opt/venvs/XSStrike/bin/activate; python /opt/XSStrike/xsstrike.py $@; deactivate;'
+    dest: /usr/local/bin/XSStrike.py
+    mode: '0755'
+
+- name: Creates /usr/share/multi
+  ansible.builtin.file:
+    path: /usr/share/multi
+    state: directory
+
+- name: Creates /usr/share/windows
+  ansible.builtin.file:
+    path: /usr/share/windows
+    state: directory
+
+- name: Download p0wny@shell
+  ansible.builtin.get_url: 
+    url: 'https://raw.githubusercontent.com/flozz/p0wny-shell/refs/heads/master/shell.php'
+    dest: /usr/share/multi/p0wny-shell.php
+    mode: '0744'
+
+- name: Download antak
+  ansible.builtin.get_url: 
+    url: 'https://raw.githubusercontent.com/samratashok/nishang/refs/heads/master/Antak-WebShell/antak.aspx'
+    dest: /usr/share/windows/antak.aspx
+    mode: '0744'
+
+- name: Check that jsluice exists
+  stat:
+    path: /usr/local/bin/jsluice
+  register: jsluice_exists
+
+- name: go install jsluice
+  shell: GOBIN=/usr/local/bin/ go install github.com/BishopFox/jsluice/cmd/jsluice@latest
+  when: not jsluice_exists.stat.exists

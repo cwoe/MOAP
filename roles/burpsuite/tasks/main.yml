@@ -1,0 +1,19 @@
+---
+- name: Check that symbolic link exists
+  stat:
+    path: /usr/local/bin/BurpSuiteCommunity
+  register: burp_exists
+
+- name: Download Burp installer
+  ansible.builtin.get_url: 
+    url: 'https://portswigger-cdn.net/burp/releases/download?product=community&version=2024.11.2&type=Linux'
+    dest: /opt/burpsuite-installer.sh
+    mode: '0700'
+  notify: delete installer
+  when: not burp_exists.stat.exists
+
+
+- name: Install burpsuite
+  shell: /opt/burpsuite-installer.sh -q -dir=/opt/BurpSuiteCommunity
+  notify: Create a symbolic link
+  when: not burp_exists.stat.exists

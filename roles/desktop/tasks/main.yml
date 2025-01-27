@@ -1,0 +1,64 @@
+---
+- name: Install pacman packages
+  community.general.pacman:
+    update_cache: false
+    name:
+      - qemu-guest-agent
+      - spice-vdagent
+      - htop
+      - bash-completion
+      - i3
+      - kitty
+      - dmenu
+      - firefox
+      - greetd-tuigreet
+      - xorg-xinit
+      - xorg-server
+      - xorg-xrandr
+      - feh
+      - picom
+    state: present
+  become: yes
+
+- name: Copy statusbar
+  ansible.builtin.copy:
+    src: status.sh
+    dest: ~/.config/status.sh
+    mode: 0700
+
+- name: Copy greetd.toml
+  ansible.builtin.copy:
+    src: greetd.toml
+    dest: /etc/greetd/config.toml
+    mode: 0744
+  become: true
+
+- name: Enable greetd service
+  ansible.builtin.systemd_service:
+    name: greetd
+    enabled: true
+  become: true
+
+- name: i3 directory exists
+  ansible.builtin.file:
+    path: ~/.config/i3
+    state: directory
+    mode: '0700'
+
+- name: Copy i3 conf
+  ansible.builtin.copy:
+    src: i3.conf
+    dest: ~/.config/i3/config
+    mode: 0700
+
+- name: Copy xinitrc
+  ansible.builtin.copy:
+    src: xinitrc
+    dest: ~/.xinitrc
+    mode: 0700
+
+- name: Copy kitty.conf
+  ansible.builtin.copy:
+    src: kitty.conf
+    dest: ~/.config/kitty/kitty.conf
+    mode: 0700

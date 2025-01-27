@@ -1,0 +1,10 @@
+- name: delete installer
+  ansible.builtin.file:
+    path: /opt/burpsuite-installer.sh
+    state: absent
+
+- name: Create a symbolic link
+  ansible.builtin.file:
+    src: /opt/BurpSuiteCommunity/BurpSuiteCommunity
+    dest: /usr/local/bin/BurpSuiteCommunity
+    state: link
