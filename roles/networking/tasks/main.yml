@@ -11,6 +11,7 @@
       - smbclient
       - gnu-netcat
       - noto-fonts-emoji #for penelope emojis
+      - python-pipx
     state: present
 
 - name: Install penelope shell handler
