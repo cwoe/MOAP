@@ -9,6 +9,8 @@
       - go
       - ruby
       - smbclient
+      - rust
+      - unzip
     state: present
 
 - name: Clone Responder

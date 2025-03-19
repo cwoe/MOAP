@@ -20,6 +20,12 @@
     state: present
   become: yes
 
+- name: config directory exists
+  ansible.builtin.file:
+    path: ~/.config
+    state: directory
+    mode: '0700'
+
 - name: Copy statusbar
   ansible.builtin.copy:
     src: status.sh
@@ -56,6 +62,12 @@
     src: xinitrc
     dest: ~/.xinitrc
     mode: 0700
+
+- name: i3 directory exists
+  ansible.builtin.file:
+    path: ~/.config/kitty
+    state: directory
+    mode: '0700'
 
 - name: Copy kitty.conf
   ansible.builtin.copy:
