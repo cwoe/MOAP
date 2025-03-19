@@ -11,6 +11,7 @@
       - smbclient
       - gnu-netcat
       - noto-fonts-emoji #for penelope emojis
+      - python-pipx
     state: present
 
 - name: Install penelope shell handler
@@ -18,3 +19,61 @@
     name: penelope
     global: true
     source: git+https://github.com/brightio/penelope
+
+- name: Creates /usr/share/windows
+  ansible.builtin.file:
+    path: /usr/share/windows
+    state: directory
+
+- name: Creates /usr/share/linux
+  ansible.builtin.file:
+    path: /usr/share/linux
+    state: directory
+
+- name: Check if ligolo-ng exists
+  stat:
+    path: /usr/local/bin/ligolo-ng
+  register: ligolo_proxy_exists
+
+- name: Check if ligolo-agent exists
+  stat:
+    path: /usr/share/linux/ligolo-agent
+  register: ligolo_agent_linux_exists
+
+- name: Check if ligolo-agent.exe exists
+  stat:
+    path: /usr/share/windows/ligolo-agent.exe
+  register: ligolo_agent_windows_exists
+
+- name: Creates tmp dir
+  ansible.builtin.file:
+    path: /tmp/ligolo-ng
+    state: directory
+  when: not ligolo_proxy_exists.stat.exists or not ligolo_agent_linux_exists.stat.exists or not ligolo_agent_windows_exists.stat.exists
+
+- name: Unarchive a file that needs to be downloaded (added in 2.0)
+  ansible.builtin.unarchive:
+    src: 'https://github.com/nicocha30/ligolo-ng/releases/download/v0.7.5/ligolo-ng_proxy_0.7.5_linux_amd64.tar.gz'
+    dest: /tmp/ligolo-ng
+    remote_src: yes
+  notify: 
+    - move ligolo_proxy
+  when: not ligolo_proxy_exists.stat.exists
+
+- name: Unarchive a file that needs to be downloaded (added in 2.0)
+  ansible.builtin.unarchive:
+    src: 'https://github.com/nicocha30/ligolo-ng/releases/download/v0.7.5/ligolo-ng_agent_0.7.5_linux_amd64.tar.gz'
+    dest: /tmp/ligolo-ng
+    remote_src: yes
+  notify: 
+    - move ligolo_agent_linux
+  when: not ligolo_agent_linux_exists.stat.exists
+
+- name: Unarchive a file that needs to be downloaded (added in 2.0)
+  ansible.builtin.unarchive:
+    src: 'https://github.com/nicocha30/ligolo-ng/releases/download/v0.7.5/ligolo-ng_agent_0.7.5_windows_amd64.zip'
+    dest: /tmp/ligolo-ng
+    remote_src: yes
+  notify: 
+    - move ligolo_agent_windows
+  when: not ligolo_agent_windows_exists.stat.exists

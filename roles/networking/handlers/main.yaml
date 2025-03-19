@@ -1,0 +1,25 @@
+- name: delete tmp folder
+  ansible.builtin.file:
+    path: /tmp/ligolo-ng
+    state: absent
+
+- name: move ligolo_agent_linux
+  ansible.builtin.copy:
+    src: /tmp/ligolo-ng/agent
+    dest: /usr/share/linux/ligolo-agent
+    mode: '0744'
+  notify: delete tmp folder
+
+- name: move ligolo_proxy
+  ansible.builtin.copy:
+    src: /tmp/ligolo-ng/proxy
+    dest: /usr/local/bin/ligolo-ng
+    mode: '0755'
+  notify: delete tmp folder
+
+- name: move ligolo_agent_windows
+  ansible.builtin.copy:
+    src: /tmp/ligolo-ng/agent.exe
+    dest: /usr/share/windows/ligolo-agent.exe
+    mode: '0744'
+  notify: delete tmp folder
