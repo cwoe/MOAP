@@ -9,7 +9,7 @@
       - nmap
       - bind
       - smbclient
-      - gnu-netcat
+      - openbsd-netcat
       - noto-fonts-emoji #for penelope emojis
       - python-pipx
     state: present
