@@ -12,6 +12,7 @@
       - openbsd-netcat
       - noto-fonts-emoji #for penelope emojis
       - python-pipx
+      - unzip
     state: present
 
 - name: Install penelope shell handler
